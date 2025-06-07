@@ -1,0 +1,83 @@
+package com.example.myapp.activity
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.myapp.databinding.ActivitySignInBinding
+import com.example.myapp.process.RetrofitClient
+import com.example.myapp.process.login.LoginRequest
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
+
+class SignInActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySignInBinding
+    private lateinit var btnLogin: Button
+    private lateinit var tvSignUp: TextView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        binding = ActivitySignInBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        initViews()
+        setupViews()
+    }
+
+    private fun initViews() {
+        btnLogin = binding.btnLogin
+        tvSignUp = binding.tvSignUp
+    }
+
+    private fun setupViews() {
+        btnLogin.setOnClickListener {
+            val username = binding.edtEmail.text.toString().trim()
+            val password = binding.edtPassword.text.toString().trim()
+
+            if (username.isEmpty() || password.isEmpty()) {
+                Snackbar.make(btnLogin, "Email và mật khẩu không được để trống", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+//            lifecycleScope.launch {
+//                try {
+//                    val response = RetrofitClient.authService.login(LoginRequest(username, password))
+//                    val token = response.token
+//                    val intent = Intent(this@SignInActivity, HomeActivity::class.java)
+//                    startActivity(intent)
+//                    finish()
+//
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                    Snackbar.make(btnLogin, "Đăng nhập thất bại", Snackbar.LENGTH_SHORT).show()
+//                }
+//            }
+            if(username == "a" && password == "a"){
+                val intent = Intent(this@SignInActivity, HomeActivity::class.java)
+                    startActivity(intent)
+                    finish()
+            }
+        }
+
+        tvSignUp.setOnClickListener {
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+        }
+    }
+}
+
+
+
+
+
+
