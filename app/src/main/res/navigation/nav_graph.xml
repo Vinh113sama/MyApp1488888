@@ -3,20 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_menu"
-    app:startDestination="@id/menuFragment">
+    app:startDestination="@id/fragment_song_list">
 
     <fragment
         android:id="@+id/favoriteFragment"
         android:name="com.example.myapp.fragment.FavoriteFragment"
         android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" >
-        <action
-            android:id="@+id/action_favoriteFragment_to_playsongFragment"
-            app:destination="@id/playsongFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_favorite" />
     <fragment
         android:id="@+id/playlistListFragment"
-        android:name="com.example.myapp.fragment.FavoriteFragment"
+        android:name="com.example.myapp.fragment.PlaylistListFragment"
         android:label="fragment_playlist"
         tools:layout="@layout/fragment_playlist_list">
         <action
@@ -24,41 +20,18 @@
             app:destination="@id/playlistFragment" />
     </fragment>
     <fragment
-        android:id="@+id/playsongFragment"
-        android:name="com.example.myapp.fragment.HistoryFragment"
-        android:label="fragment_history"
-        tools:layout="@layout/fragment_play_song" />
-    <fragment
         android:id="@+id/playlistFragment"
-        android:name="com.example.myapp.fragment.FavoriteFragment"
-        android:label="fragment_favorite"
-        tools:layout="@layout/fragment_playlist" >
-        <action
-            android:id="@+id/action_playlistFragment_to_playsongFragment"
-            app:destination="@id/playsongFragment" />
-    </fragment>
+        android:name="com.example.myapp.fragment.PlaylistFragment"
+        android:label="fragment_playlist"
+        tools:layout="@layout/fragment_playlist" />
     <fragment
         android:id="@+id/historyFragment"
         android:name="com.example.myapp.fragment.HistoryFragment"
         android:label="fragment_history"
-        tools:layout="@layout/fragment_history" >
-        <action
-            android:id="@+id/action_historyFragment_to_playsongFragment"
-            app:destination="@id/playsongFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_history" />
     <fragment
-        android:id="@+id/menuFragment"
-        android:name="com.example.myapp.fragment.LayoutMenuFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_layout_menu" >
-        <action
-            android:id="@+id/action_homeFragment_to_historyFragment"
-            app:destination="@id/historyFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_favoriteFragment"
-            app:destination="@id/favoriteFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_playlistListFragment"
-            app:destination="@id/playlistListFragment" />
-    </fragment>
+        android:id="@+id/fragment_song_list"
+        android:name="com.example.myapp.fragment.SongListFragment"
+        android:label="fragment_song_list"
+        tools:layout="@layout/fragment_song_list" />
 </navigation>

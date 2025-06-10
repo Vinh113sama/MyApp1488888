@@ -36,9 +36,9 @@
             android:layout_marginEnd="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/imgbtn_content"
-            app:layout_constraintBottom_toBottomOf="@+id/edt_search"
+            app:layout_constraintBottom_toBottomOf="@id/edt_search"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/edt_search"
+            app:layout_constraintTop_toTopOf="@id/edt_search"
             app:srcCompat="@drawable/ic_search"
             tools:ignore="TouchTargetSizeCheck" />
 
@@ -49,43 +49,43 @@
             android:layout_marginStart="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/imgbtn_content"
-            app:layout_constraintBottom_toBottomOf="@+id/edt_search"
+            app:layout_constraintBottom_toBottomOf="@id/edt_search"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/edt_search"
+            app:layout_constraintTop_toTopOf="@id/edt_search"
             app:srcCompat="@drawable/ic_menu"
             tools:ignore="TouchTargetSizeCheck,DuplicateSpeakableTextCheck" />
 
         <TextView
-            android:id="@+id/lable_popular_songs"
+            android:id="@+id/label_popular_songs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/popular_songs"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/edt_search"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edt_search" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:overScrollMode="always"
-            android:scrollbars="vertical"
-            android:id="@+id/rc_popurlar"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            app:defaultNavHost="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lable_popular_songs"
-            tools:ignore="SpeakableTextPresentCheck"
-            tools:listitem="@layout/item_song" />
-
+            app:layout_constraintTop_toBottomOf="@id/label_popular_songs"
+            app:navGraph="@navigation/nav_graph" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="280dp"
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:navGraph="@navigation/nav_graph"
-        app:defaultNavHost="true" />
+        android:paddingTop="16dp"
+        android:background="@color/brown148"
+        app:headerLayout="@layout/layout_top_interface"
+        app:menu="@menu/drawable_menu"
+        tools:ignore="VisualLintBounds" />
 </androidx.drawerlayout.widget.DrawerLayout>

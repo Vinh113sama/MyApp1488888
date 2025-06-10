@@ -1,26 +1,26 @@
 package com.example.myapp.process.getsong
 
-import com.google.gson.annotations.SerializedName
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Song(
-    @SerializedName("id")
-    val id: String,
-
-    @SerializedName("title")
+    val id: Int,
     val title: String,
+    val titleNormalized: String,
+    val duration: Int,
+    val url: String,
+    val imageUrl: String?,
+    val artistId: Int,
+    val createdAt: String,
+    val artist: Artist,
+) : Parcelable
 
-    @SerializedName("album")
-    val album: String,
-
-    @SerializedName("artist")
-    val artist: String,
-
-    @SerializedName("source")
-    val source: String,
-
-    @SerializedName("image")
-    val image: String,
-
-    @SerializedName("duration")
-    val duration: Int
-)
+@Parcelize
+data class Artist(
+    val id: Int,
+    val name: String,
+    val nameNormalized: String,
+    val imageUrl: String?,
+    val createdAt: String
+) : Parcelable

@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/edt_email"
+        android:id="@+id/edt_username"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -51,9 +51,9 @@
         android:inputType="textPassword"
         android:minHeight="48dp"
         android:textColorHint="#546E7A"
-        app:layout_constraintEnd_toEndOf="@+id/edt_email"
-        app:layout_constraintStart_toStartOf="@+id/edt_email"
-        app:layout_constraintTop_toBottomOf="@+id/edt_email"
+        app:layout_constraintEnd_toEndOf="@+id/edt_username"
+        app:layout_constraintStart_toStartOf="@+id/edt_username"
+        app:layout_constraintTop_toBottomOf="@+id/edt_username"
         tools:ignore="VisualLintTextFieldSize" />
 
     <Button

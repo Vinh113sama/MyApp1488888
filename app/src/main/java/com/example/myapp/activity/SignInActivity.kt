@@ -1,5 +1,6 @@
 package com.example.myapp.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -39,9 +40,10 @@ class SignInActivity : AppCompatActivity() {
         tvSignUp = binding.tvSignUp
     }
 
+    @SuppressLint("UseKtx")
     private fun setupViews() {
         btnLogin.setOnClickListener {
-            val username = binding.edtEmail.text.toString().trim()
+            val username = binding.edtUsername.text.toString().trim()
             val password = binding.edtPassword.text.toString().trim()
 
             if (username.isEmpty() || password.isEmpty()) {
@@ -49,26 +51,23 @@ class SignInActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-//            lifecycleScope.launch {
-//                try {
-//                    val response = RetrofitClient.authService.login(LoginRequest(username, password))
-//                    val token = response.token
-//                    val intent = Intent(this@SignInActivity, HomeActivity::class.java)
-//                    startActivity(intent)
-//                    finish()
-//
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                    Snackbar.make(btnLogin, "Đăng nhập thất bại", Snackbar.LENGTH_SHORT).show()
-//                }
-//            }
-            if(username == "a" && password == "a"){
-                val intent = Intent(this@SignInActivity, HomeActivity::class.java)
+            lifecycleScope.launch {
+                try {
+                    val response = RetrofitClient.authService.login(LoginRequest(username, password))
+                    val token = response.token
+                    val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+                    sharedPreferences.edit().putString("access_token", token).apply()
+
+                    val intent = Intent(this@SignInActivity, HomeActivity::class.java)
                     startActivity(intent)
                     finish()
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Snackbar.make(btnLogin, "Đăng nhập thất bại", Snackbar.LENGTH_SHORT).show()
+                }
             }
         }
-
         tvSignUp.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)

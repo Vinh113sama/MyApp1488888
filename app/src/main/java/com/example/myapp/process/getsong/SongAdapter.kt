@@ -7,8 +7,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapp.databinding.ItemSongBinding
+import java.util.Locale
 
 class SongAdapter : ListAdapter<Song, SongAdapter.SongViewHolder>(DiffCallback) {
+    private var onItemClick: ((Song, Int) -> Unit)? = null
 
     inner class SongViewHolder(val binding: ItemSongBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -26,11 +28,27 @@ class SongAdapter : ListAdapter<Song, SongAdapter.SongViewHolder>(DiffCallback) 
         val song = getItem(position)
 
         holder.binding.tvSongName.text = song.title
-        holder.binding.tvArtistName.text = song.artist
+        holder.binding.tvArtistName.text = song.artist.name
+        holder.binding.tvDuration.text = fomartDuration(song.duration)
 
         Glide.with(holder.itemView.context)
-            .load(song.image)
+            .load(song.imageUrl)
             .into(holder.binding.imgSong)
+
+        holder.binding.root.setOnClickListener {
+            onItemClick?.invoke(song, position)
+        }
+    }
+
+    private fun fomartDuration(seconds: Int): String {
+        val minutes = seconds / 60
+        val remainingSeconds = seconds % 60
+        return String.format(Locale.getDefault() ,"%02d:%02d", minutes, remainingSeconds)
+
+    }
+
+    fun setOnItemClickListener(listener: (Song, Int) -> Unit) {
+        onItemClick = listener
     }
 
     companion object {

@@ -33,7 +33,7 @@
             android:name=".activity.SignInActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.PlaySongActivity"
             android:exported="true">
         </activity>
     </application>

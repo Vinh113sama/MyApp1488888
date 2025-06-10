@@ -3,6 +3,9 @@ package com.example.myapp.process.getsong
 import com.google.gson.annotations.SerializedName
 
 data class SongResponse(
-    @SerializedName("song")
-    val songs: List<Song>
+    val data: List<Song>,
+    val limit: Int,
+    val total: Int,
+    val totalPages: Int,
+    val currentPage: Int
 )
