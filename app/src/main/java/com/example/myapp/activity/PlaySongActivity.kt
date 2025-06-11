@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.myapp.R
 import com.example.myapp.databinding.ActivityPlaySongBinding
 import com.example.myapp.process.getsong.Song
@@ -17,13 +20,47 @@ class PlaySongActivity : AppCompatActivity() {
     private var isFavorite = false
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
+    private var isShuffle = true
+    private val handler = android.os.Handler(Looper.getMainLooper())
+    private var runnable: Runnable? = null
 
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlaySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initPlaylist()
+        setupUI()
+        setupEvent()
+    }
+
+    private fun playSong(url: String) {
+        runnable?.let { handler.removeCallbacks(it) }
+        mediaPlayer?.release()
+        isPlaying = false
+        mediaPlayer = MediaPlayer().apply {
+            setDataSource(url)
+            prepareAsync()
+            setOnPreparedListener {
+                it.start()
+                this@PlaySongActivity.isPlaying = true
+                binding.imgbtnPlay.setImageResource(R.drawable.ic_pause)
+                startSeekBarUpdate()
+            }
+        }
+        mediaPlayer?.setOnCompletionListener {
+            runnable?.let { handler.removeCallbacks(it) }
+            if (!isShuffle) {
+                val randomPosition = (0 until playlist.size).random()
+                loadSong(randomPosition)
+            } else {
+                nextSong()
+            }
+        }
+    }
+
+
+    private fun initPlaylist() {
         playlist = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableArrayListExtra("playlist", Song::class.java) ?: arrayListOf()
         } else {
@@ -31,17 +68,30 @@ class PlaySongActivity : AppCompatActivity() {
             intent.getParcelableArrayListExtra("playlist") ?: arrayListOf()
         }
         currentPosition = intent.getIntExtra("position", 0)
+    }
 
+    private fun setupUI() {
         if (playlist.isNotEmpty()) {
             val currentSong = playlist[currentPosition]
             binding.tvSongName.text = currentSong.title
             binding.tvArtistName.text = currentSong.artist.name
-            binding.tvTimeMax.text = formatDuration(currentSong.duration)
+            binding.tvArtistName.isSelected = true
+            Glide.with(this)
+                .load(currentSong.imageUrl)
+                .placeholder(R.drawable.ic_music_note)
+                .error(R.drawable.img_avatar_default)
+                .into(binding.imgSong)
+            //   binding.tvTimeMax.text = formatDuration(mediaPlayer!!.duration)
 
+            playSong(currentSong.url)
         } else {
-            binding.tvSongName.text = "Không có bài hát"
+            binding.tvSongName.text = buildString {
+                append("@string/no_song")
+            }
         }
+    }
 
+    private fun setupEvent() {
         binding.imgbtnNext.setOnClickListener {
             nextSong()
         }
@@ -52,8 +102,12 @@ class PlaySongActivity : AppCompatActivity() {
             loadSong(currentPosition)
         }
         binding.imgbtnShuffle.setOnClickListener {
-            val randomIndex = (0 until playlist.size).random()
-            loadSong(randomIndex)
+            isShuffle = !isShuffle
+            if (isShuffle) {
+                binding.imgbtnShuffle.setImageResource(R.drawable.ic_circuit)
+            } else {
+                binding.imgbtnShuffle.setImageResource(R.drawable.ic_shuffle)
+            }
         }
         binding.imgbtnBack.setOnClickListener {
             finish()
@@ -78,28 +132,38 @@ class PlaySongActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun playSong(url: String) {
-        mediaPlayer?.release()
-        isPlaying = false
-        mediaPlayer = MediaPlayer().apply {
-            setDataSource(url)
-            prepareAsync()
-            setOnPreparedListener {
-                it.start()
-                this@PlaySongActivity.isPlaying = true
-                binding.imgbtnPlay.setImageResource(R.drawable.ic_pause)
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    mediaPlayer?.seekTo(progress * 1000)
+                }
             }
-        }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                if (seekBar != null && mediaPlayer != null && mediaPlayer!!.duration > 0) {
+                    val durationInSeconds = mediaPlayer!!.duration / 1000
+                    seekBar.max = durationInSeconds
+                    runnable?.let { handler.removeCallbacks(it) }
+                }
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                startSeekBarUpdate()
+            }
+        })
     }
 
     private fun loadSong(position: Int) {
         val currentSong = playlist[position]
         binding.tvSongName.text = currentSong.title
         binding.tvArtistName.text = currentSong.artist.name
+        Glide.with(this)
+            .load(currentSong.imageUrl)
+            .placeholder(R.drawable.ic_music_note)
+            .error(R.drawable.img_avatar_default)
+            .into(binding.imgSong)
         binding.tvTimeMax.text = formatDuration(currentSong.duration)
-
         isPlaying = false
         isFavorite = loadFavoriteStatus(currentSong.id)
         updateFavoriteIcon()
@@ -116,6 +180,7 @@ class PlaySongActivity : AppCompatActivity() {
         return prefs.getBoolean(songId.toString(), false)
     }
 
+    @SuppressLint("UseKtx")
     private fun saveFavoriteStatus(songId: Int, isFavorite: Boolean) {
         val prefs = getSharedPreferences("favorites", MODE_PRIVATE)
         prefs.edit().putBoolean(songId.toString(), isFavorite).apply()
@@ -143,7 +208,23 @@ class PlaySongActivity : AppCompatActivity() {
         loadSong(currentPosition)
     }
 
+    private fun startSeekBarUpdate() {
+        mediaPlayer?.let { player ->
+            binding.tvTimeMax.text = formatDuration((mediaPlayer!!.duration)/1000)
+            binding.seekBar.max = player.duration / 1000
+
+            runnable = Runnable {
+                val currentPosition = player.currentPosition / 1000
+                binding.seekBar.progress = currentPosition
+                binding.tvTimeCurrent.text = formatDuration(currentPosition)
+                runnable?.let { handler.postDelayed(it, 1000) }
+            }
+            runnable?.let { handler.post(it) }
+        }
+    }
+
     override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
         mediaPlayer?.release()
         mediaPlayer = null
         super.onDestroy()
